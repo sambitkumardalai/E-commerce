@@ -52,7 +52,7 @@ const productSchema = new mongoose.Schema({
         required: true,
       },
       comment: {
-        type: string,
+        type: String,
         required: true,
       },
     },
