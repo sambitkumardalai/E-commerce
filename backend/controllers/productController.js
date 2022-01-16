@@ -1,7 +1,8 @@
 const Product = require("../models/productModel");
-
+const ErrorHandler = require("../utils/errorHandler");
+const catchAsyncErrors = require("../middleware/catchAsync");
 // ===create product(Admin)
-exports.createProduct = async (req, res) => {
+exports.createProduct = catchAsyncErrors(async (req, res) => {
   const newProduct = await Product.create(req.body);
   if (newProduct) {
     res.status(201).json({
@@ -9,10 +10,10 @@ exports.createProduct = async (req, res) => {
       newProduct,
     });
   }
-};
+});
 
 // ===get all products
-exports.getAllProducts = async (req, res) => {
+exports.getAllProducts = catchAsyncErrors(async (req, res) => {
   const allProducts = await Product.find();
   if (allProducts.length) {
     res.status(200).json({
@@ -21,10 +22,10 @@ exports.getAllProducts = async (req, res) => {
       allProducts,
     });
   }
-};
+});
 
 // ==== update product
-exports.updateProduct = async (req, res, next) => {
+exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
   if (!product) {
     return res.status(500).json({
@@ -41,9 +42,9 @@ exports.updateProduct = async (req, res, next) => {
     success: true,
     product,
   });
-};
+});
 
-exports.deleteProduct = async (req, res, next) => {
+exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
   if (!product) {
     return res.status(500).json({
@@ -58,19 +59,16 @@ exports.deleteProduct = async (req, res, next) => {
     deletedProduct,
   });
   next();
-};
+});
 
-exports.getProductDetails = async (req, res, next) => {
+exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
   if (!product) {
-    return res.status(500).json({
-      success: false,
-      message: "Product not found",
-    });
+    return next(new ErrorHandler("Product not found", 404));
   }
   res.status(200).json({
     success: true,
     product,
   });
   next();
-};
+});
